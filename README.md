@@ -5,7 +5,7 @@ Small Interpreter for Post-Fix Polish Notation I wrote.
 
         NEW FEATURES:
 
-            [·] Float Number Support
+            [X] Float Number Support
 
             [·] More OPERATORS(power, etc.)
 
