@@ -7,6 +7,6 @@ Small Interpreter for Post-Fix Polish Notation I wrote.
 
             [X] Float Number Support
             
-            [·] Negative Number Support
+            [X] Negative Number Support
 
             [-] More OPERATORS(power is implemented, may implement factorials, sqrt, etc.)
