@@ -31,12 +31,12 @@ def gpt(match_arg):
 
     for x in range(2):
         try:
-            tree.append(float(match_arg.group("oand%d" % x)))
+            tree.append(float(match_arg.group("operand%d" % x)))
 
         except ValueError:
             match = regex.fullmatch(
                 polish_notation, 
-                match_arg.group("oand%d" % x)
+                match_arg.group("operand%d" % x)
             )
 
             tree.append(gpt(match))
@@ -45,18 +45,18 @@ def gpt(match_arg):
 
     return tuple(tree)
 
-polish_notation = " *(\( *(?P<operator>\+|\-|\/|\*) *(?P<oand0>\d+\.\d+|\w+|(?R))+ +(?P<oand1>\d+\.\d+|\w+|(?R))+ *\)) *"
+polish_notation = " *(\( *(?P<operator>\+|\-|\/|\*|\*\*) *(?P<operand0>\d+\.\d+|\w+|(?R))+ +(?P<operand1>\d+\.\d+|\w+|(?R))+ *\)) *"
 
 def get_parse_tree(string):
 
-    match = regex.fullmatch(polish_notation, string)
+    match = regex.fullmatch(polish_notation, string.replace("^", "**"))
 
     return gpt(match)
 
 print(
     interpreter(
         get_parse_tree(
-            "(+ (- 20 6) (* 5 (/ 25 5)))" #39
+            "(+ (- 20 6) (^ (/ 25 5) (* 1 2)))" #39
         )
     )
 )
