@@ -3,6 +3,7 @@ import regex
 
 stack = []
 
+#uses the "parse tree" as a guide to calculate the polish notation's result, and returns that.(FLOAT)
 def interpreter(parse_tree):
     global stack
 
@@ -25,6 +26,8 @@ def interpreter(parse_tree):
 
     return stack[0]
 
+#returns "parse tree" of which consists of tuples, 
+#    detailing the information in the polish notation expression in an easier format for the interpreter to work with.
 def gpt(match_arg):
     
     tree = []
@@ -39,12 +42,12 @@ def gpt(match_arg):
 
         except ValueError:
 
-            match = regex.match(
-                polish_notation, 
+            match = regex.search(
+                expression, 
                 tval
             )
 
-            match_2 = regex.fullmatch(
+            match_2 = regex.search( #just in case the expression turns out to be a negative number.
                 "(%s)" % neg, 
                 regex.sub("[\(\)]", "", tval)
             )
@@ -59,20 +62,29 @@ def gpt(match_arg):
 
     return tuple(tree)
 
-neg = "-\d+(?:\.\d+)?"
+#extra-step between user and regex/gpt, by having that handled here, returning from gpt.
+def get_parse_tree(pn_expr):
 
-operator = "(?P<operator>\+|\-|\/|\*|\*\*)"
-
-operand = "(?P<operand%d>\d+\.\d+|\({}\)|\w+|(?R))+".format(neg)
-
-polish_notation = "\( *{} *{} +{} *\)" \
-    .format(operator, operand % 0, operand % 1)
-
-def get_parse_tree(string):
-
-    match = regex.fullmatch(polish_notation, string.replace("^", "**"))
+    match = regex.search(
+        expression, 
+        regex.sub(
+            "[A-z_:]+", 
+            "", 
+            pn_expr.replace("^", "**")
+        )
+    )
 
     return gpt(match)
+
+
+neg = "-\d+(?:\.\d+)?" # used in negative number declaration
+
+operator = "(?P<operator>\+|\-|\/|\*|\*\*)" #add, sub, div, mul, pwr
+
+operand = "(?P<operand%d>\d+\.\d+|\({}\)|\w+|(?R))+".format(neg) #a positive number declaration, a negative number declaration, or another expression.
+
+expression = " *\( *{} *{} +{} *\) *" \
+    .format(operator, operand % 0, operand % 1) #the finished product. this contains everything to parse the normal polish notation expression.
 
 print(
     interpreter(
