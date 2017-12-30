@@ -9,7 +9,7 @@ def interpreter(parse_tree):
     for item in parse_tree:
 
         if isinstance(item, tuple):
-            result = interpreter(item)
+            interpreter(item)
 
         else:
 
@@ -20,7 +20,7 @@ def interpreter(parse_tree):
 
                 exec("stack.append(%s %s %s)" % (op_1, item, op_2))
 
-            elif isinstance(item, int): #OPERAND
+            elif isinstance(item, int) or isinstance(item, float): #OPERAND
                 stack.append(item)
 
     return stack[0]
@@ -31,7 +31,7 @@ def gpt(match_arg):
 
     for x in range(2):
         try:
-            tree.append(int(match_arg.group("oand%d" % x)))
+            tree.append(float(match_arg.group("oand%d" % x)))
 
         except ValueError:
             match = regex.fullmatch(
@@ -45,7 +45,7 @@ def gpt(match_arg):
 
     return tuple(tree)
 
-polish_notation = " *(\( *(?P<operator>\+|\-|\/|\*) *(?P<oand0>\d+|\w+|(?R))+ +(?P<oand1>\d+|\w+|(?R))+ *\)) *"
+polish_notation = " *(\( *(?P<operator>\+|\-|\/|\*) *(?P<oand0>\d+\.\d+|\w+|(?R))+ +(?P<oand1>\d+\.\d+|\w+|(?R))+ *\)) *"
 
 def get_parse_tree(string):
 
