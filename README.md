@@ -10,7 +10,3 @@ Small Interpreter for Post-Fix Polish Notation I wrote.
             [·] Negative Number Support
 
             [-] More OPERATORS(power is implemented, may implement factorials, sqrt, etc.)
-
-        IMPROVEMENTS:
-
-            [·] Optional Brackets?
