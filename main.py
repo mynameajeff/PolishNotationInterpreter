@@ -30,22 +30,43 @@ def gpt(match_arg):
     tree = []
 
     for x in range(2):
+
+        tval = match_arg.group("operand%d" % x)
+        
         try:
-            tree.append(float(match_arg.group("operand%d" % x)))
+
+            tree.append(float(tval))
 
         except ValueError:
-            match = regex.fullmatch(
+
+            match = regex.match(
                 polish_notation, 
-                match_arg.group("operand%d" % x)
+                tval
             )
 
-            tree.append(gpt(match))
+            match_2 = regex.fullmatch(
+                "(%s)" % neg, 
+                regex.sub("[\(\)]", "", tval)
+            )
+
+            if match:
+                tree.append(gpt(match))
+
+            else:
+                tree.append(float(match_2.group(0)))
 
     tree.append(match_arg.group("operator"))
 
     return tuple(tree)
 
-polish_notation = " *(\( *(?P<operator>\+|\-|\/|\*|\*\*) *(?P<operand0>\d+\.\d+|\w+|(?R))+ +(?P<operand1>\d+\.\d+|\w+|(?R))+ *\)) *"
+neg = "-\d+(?:\.\d+)?"
+
+operator = "(?P<operator>\+|\-|\/|\*|\*\*)"
+
+operand = "(?P<operand%d>\d+\.\d+|\({}\)|\w+|(?R))+".format(neg)
+
+polish_notation = "\( *{} *{} +{} *\)" \
+    .format(operator, operand % 0, operand % 1)
 
 def get_parse_tree(string):
 
@@ -56,7 +77,7 @@ def get_parse_tree(string):
 print(
     interpreter(
         get_parse_tree(
-            "(+ (- 20 6) (^ (/ 25 5) (* 1 2)))" #39
+            "(+ (- 20.5 (-6.5)) (^ (/ 25 5) (* 1 2)))" #52
         )
     )
 )
