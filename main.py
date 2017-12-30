@@ -12,17 +12,15 @@ def interpreter(parse_tree):
         if isinstance(item, tuple):
             interpreter(item)
 
-        else:
+        elif isinstance(item, str): #OPERATOR
 
-            if isinstance(item, str): #OPERATOR
-                
-                op_2 = stack.pop()
-                op_1 = stack.pop()
+            op_2 = stack.pop()
+            op_1 = stack.pop()
 
-                exec("stack.append(%s %s %s)" % (op_1, item, op_2))
+            exec("stack.append(%s %s %s)" % (op_1, item, op_2))
 
-            elif isinstance(item, int) or isinstance(item, float): #OPERAND
-                stack.append(item)
+        elif isinstance(item, float): #OPERAND
+            stack.append(item)
 
     return stack[0]
 
@@ -35,7 +33,7 @@ def gpt(match_arg):
     for x in range(2):
 
         tval = match_arg.group("operand%d" % x)
-        
+
         try:
 
             tree.append(float(tval))
