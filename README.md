@@ -6,6 +6,8 @@ Small Interpreter for Post-Fix Polish Notation I wrote.
         NEW FEATURES:
 
             [X] Float Number Support
+            
+            [·] Negative Number Support
 
             [·] More OPERATORS(power, etc.)
 
