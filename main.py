@@ -1,15 +1,15 @@
 
-import regex
+import lark
 
 stack = []
 
-#uses the "parse tree" as a guide to calculate the polish notation's result, and returns that.(FLOAT)
+#uses the converted parse tree as a guide to calculate the polish notation's result, and returns that.(FLOAT)
 def interpreter(parse_tree):
     global stack
 
     for item in parse_tree:
 
-        if isinstance(item, tuple):
+        if isinstance(item, tuple): #PARSE_TREE/EXPRESSION
             interpreter(item)
 
         elif isinstance(item, str): #OPERATOR
@@ -24,70 +24,64 @@ def interpreter(parse_tree):
 
     return stack[0]
 
-#returns "parse tree" of which consists of tuples, 
-#    detailing the information in the polish notation expression in an easier format for the interpreter to work with.
-def gpt(match_arg):
-    
+#to convert the parse tree into a usable format.
+class tran(lark.Transformer):
+
+    def signed(self, n):
+        return float(n[0])
+
+    def unsigned(self, n):
+        return float(n[0][1:-1])
+
+    def operator(self, n):
+        return str(n[0])
+
+    expr = tuple
+
+    operand = lambda _, n: n[0]
+    num     = lambda _, n: n[0]
+
+#for reversing the polish notation so that it's able to be interpreted by the interpreter(parse_tree) function.
+def gpt(match):
+
     tree = []
 
     for x in range(2):
 
-        tval = match_arg.group("operand%d" % x)
+        tval = match[x + 1]
 
-        try:
+        if isinstance(tval, float):
+            tree.append(tval)
 
-            tree.append(float(tval))
+        else:
+            tree.append(gpt(tval))
 
-        except ValueError:
-
-            match = regex.search(
-                expression, 
-                tval
-            )
-
-            match_2 = regex.search( #just in case the expression turns out to be a negative number.
-                "(%s)" % neg, 
-                regex.sub("[\(\)]", "", tval)
-            )
-
-            if match:
-                tree.append(gpt(match))
-
-            else:
-                tree.append(float(match_2.group(0)))
-
-    tree.append(match_arg.group("operator"))
+    tree.append(match[0])
 
     return tuple(tree)
 
-#extra-step between user and regex/gpt, by having that handled here, returning from gpt.
 def get_parse_tree(pn_expr):
+    return pn_parser.parse(pn_expr.replace("^", "**"))
 
-    match = regex.search(
-        expression, 
-        regex.sub(
-            "[A-z_:]+", 
-            "", 
-            pn_expr.replace("^", "**")
-        )
-    )
+def convert(a):
+    return gpt(tran().transform(a))
 
-    return gpt(match)
+with open("grammar.ebnf") as file:
+    pn_grammar = r''.join([line for line in file])
 
-
-neg = "-\d+(?:\.\d+)?" # used in negative number declaration
-
-operator = "(?P<operator>\+|\-|\/|\*|\*\*)" #add, sub, div, mul, pwr
-
-operand = "(?P<operand%d>\d+\.\d+|\({}\)|\w+|(?R))+".format(neg) #a positive number declaration, a negative number declaration, or another expression.
-
-expression = " *\( *{} *{} +{} *\) *" \
-    .format(operator, operand % 0, operand % 1) #the finished product. this contains everything to parse the normal polish notation expression.
-
-print(
-    interpreter(
-        get_parse_tree(
-            "(+ (- 20.5 (-6.5)) (^ (/ 25 5) (* 1 2)))" #52
-        )
-    )
+pn_parser = lark.Lark(
+    pn_grammar, 
+    start  = "expr", 
+    parser = "lalr"
 )
+
+if __name__ == "__main__":
+    print(
+        interpreter(
+            convert(
+                get_parse_tree(
+                    "(+ (- 20.5 (-6.5)) (^ (/ 25 5) (* 1 2)))"
+                )
+            )
+        )
+    )
