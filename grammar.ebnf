@@ -1,0 +1,17 @@
+
+expr: "(" operator operand operand ")"
+
+operator: /(\+|-|\/|\*\*|\*)/
+
+operand: expr 
+       | num
+
+num: signed 
+   | unsigned
+
+unsigned: /\( *-\d+(\.\d+)? *\)/
+signed: SIGNED_NUMBER
+
+%import common.SIGNED_NUMBER
+%import common.WS
+%ignore WS
