@@ -1,7 +1,7 @@
 # PolishNotationInterpreter
 Small Interpreter for Post-Fix Polish Notation using LARK.
 
-      TODO: · = done, - = partially implemented, X = complete.
+      TODO: · = not implemented, - = partially implemented, X = complete.
 
         NEW FEATURES:
 
