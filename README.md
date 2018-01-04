@@ -1,5 +1,5 @@
 # PolishNotationInterpreter
-Small Interpreter for Post-Fix Polish Notation I wrote.
+Small Interpreter for Post-Fix Polish Notation using LARK.
 
       TODO: · = done, - = partially implemented, X = complete.
 
